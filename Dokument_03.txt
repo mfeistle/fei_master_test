@@ -3,7 +3,6 @@
 140522 1214 Origin Work change
 140522 1215 Origin Work change
 140522 1216 Origin Work change
-140908 1540 Diese commit wird wieder rückgängig gemacht mit revert... (Neue Zeile zwischen R und S)
 
 A
 140522 1528 durch mfeistle
@@ -27,7 +26,6 @@ O
 P
 Q
 R
-140908 1540 Neue zeile
 S
 T
 U
