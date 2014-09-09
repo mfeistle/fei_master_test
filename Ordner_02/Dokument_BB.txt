@@ -4,6 +4,7 @@
 140522 1215 Origin Work change
 140522 1216 Origin Work change
 140909 1436 Branch_01_renamed will be deleted and created with a new name on the remote server, locally it will just be renamed
+140909 1759 New Branch...
 
 A
 140522 1528 durch mfeistle
