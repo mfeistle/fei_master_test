@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<radiosim>
+  <settings>
+    <setting name="com" value="7" brief="COM port"/>
+    <setting name="out" value="example.log" brief="Output file"/>
+  </settings>
+  <variables>
+    <variable name="uniqueID" value="00 01 02 03 FF FE FD FC 50 55 5A 5F" brief="Unique Device ID (3 x 32Bits)"/>
+    <variable name="myNetwork" value="FF FF" brief="Own network address"/>
+    <variable name="myAddress" value="FF" brief="Own device address"/>
+    <variable name="yourAddress" value="FF" brief="Address of the controller"/>
+    <variable name="seqNumber" value="15" brief="Start sequence number"/>
+    <variable name="channel1" value="20" brief="Start channel1 value"/>
+    <variable name="channel2" value="30" brief="Start channel2 value"/>
+  </variables>
+  <requests>
+    <request name="writeBluetooth" value="04 10 10 00 00 03 06 01 2C 01 58 00 01" endless="1" stoponerror="1">
+      <change name="Change Channel1" offset="8" size="1" variable="channel1"/>
+      <change name="Change Channel2" offset="10" size="1" variable="channel2"/>
+      <verify name="Verify Length" length="6"/>
+    </request>
+    <request name="readBluetooth" value="04 03 10 00 00 02" endless="1" stoponerror="1">
+      <verify name="Verify Length" length="7"/>
+      <save name="save channel1" offset="4" size="1" variable="channel1"/>
+      <save name="save channel2" offset="6" size="1" variable="channel2"/>
+    </request>
+    <request name="readSlyder" value="01 03 10 00 00 02" endless="1" stoponerror="1">
+      <verify name="Verify Length" length="7"/>
+    </request>
+    <request name="writeSlyder" value="01 10 11 00 00 02 04 40 00 00 00" endless="1" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+  </requests>
+</radiosim>

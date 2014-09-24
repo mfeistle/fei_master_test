@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<radiosim>
+  <settings>
+    <setting name="out" value="example.log" brief="Output file"/>
+  </settings>
+  <requests>
+    <request name="readBrightness" value="04 03 10 03 00 0A" stoponerror="1" endless="1" cyclic="5000" >
+      <verify name="Verify Length" length="23"/>
+    </request>
+  </requests>
+</radiosim>

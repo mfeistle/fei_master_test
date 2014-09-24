@@ -1,0 +1,5 @@
+>DECIMAL_CS_VERSION=67
+// UART connection speed = 115200
+&UART_RATE = 01d9
+// Sleep mode = always awake
+&SLEEP_MODE = 0000

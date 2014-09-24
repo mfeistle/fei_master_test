@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<radiosim>
+  <settings>
+    <setting name="out" value="example.log" brief="Output file"/>
+  </settings>
+
+  <variables>
+    <variable name="discoveryTime" value="500" brief="Bluetooth discovery time"/>
+    <variable name="brightness1Channel0" value="302" brief="Brightness 1"/>
+    <variable name="brightness1Channel1" value="320" brief="Brightness 1"/>
+    <variable name="brightness2Channel0" value="356" brief="Brightness 1"/>
+    <variable name="brightness2Channel1" value="336" brief="Brightness 1"/>
+  </variables>
+
+  <requests>
+    <request name="readFinderVersionOnDUT" value="04 03 11 00 00 20" endless="0" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="67"/>
+      <save name="finderVersion" offset="3" length="64" variable="finderVersion" print="ascii"/>
+    </request>
+    <request name="readDiscoverTimeOnDUT" value="04 03 10 24 00 01" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+      <save name="saveOriginalDiscoveryTime" offset="3" length="2" variable="origianlDiscoveryTimeReadback" print="uint16_t"/>
+    </request>
+    <request name="writeDiscoverTimeOnDUT" value="04 10 10 24 00 01 02 00 00" endless="0" stoponerror="1">
+      <change name="Change discovery time" offset="7" size="2" variable="discoveryTime"/>
+      <verify name="Verify Length" length="6"/>
+    </request>
+    <request name="readDiscoverTimeOnDUT" value="04 03 10 24 00 01" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+      <save name="saveDiscoveryTime" offset="3" length="2" variable="discoveryTimeReadback" print="uint16_t"/>
+    </request>
+
+    <request name="setBrightness1OnREF" value="c8 10 10 03 00 02 04 00 00 00 00" endless="0" stoponerror="1">
+      <change name="brightness1Channel0OnREF" offset="7" size="2" variable="brightness1Channel0"/>
+      <change name="brightness1Channel0OnREF" offset="9" size="2" variable="brightness1Channel1"/>
+      <verify name="Verify Length" length="6"/>
+    </request>
+
+    <request name="enableBluetoothOnDUT" value="04 10 10 00 00 01 02 00 09" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+    
+    <request name="enableBluetoothOnREF" value="c8 10 10 00 00 01 02 00 09" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+    
+    <request name="read1ChannelOnDUT" value="04 03 10 03 00 0A" endless="0" stoponerror="1" delay="2500" >
+      <verify name="Verify Length" length="23"/>
+      <save name="brightness1OnDUTChannel0" offset="3" length="2" variable="brightness1Channel0Readback" print="uint16_t" hex="1" />
+      <save name="brightness1OnDUTChannel1" offset="5" length="2" variable="brightness1Channel1Readback" print="uint16_t" hex="1" />
+    </request>
+
+    <request name="writeDiscoverTimeOnDUT" value="04 10 10 24 00 01 02 00 00" endless="0" stoponerror="1">
+      <change name="Set original discovery time" offset="7" size="2" variable="origianlDiscoveryTimeReadback"/>
+      <verify name="Verify Length" length="6"/>
+    </request>
+
+    <request name="setBrightness2OnREF" value="c8 10 10 03 00 02 04 00 00 00 00" endless="0" stoponerror="1">
+      <change name="brightness2Channel0OnREF" offset="7" size="2" variable="brightness2Channel0"/>
+      <change name="brightness2Channel0OnREF" offset="9" size="2" variable="brightness2Channel1"/>
+      <verify name="Verify Length" length="6"/>
+    </request>
+
+    <request name="read2ChannelOnDUT" value="04 03 10 03 00 0A" endless="0" stoponerror="1" delay="500">
+      <verify name="Verify Length" length="23"/>
+      <save name="brightness2OnDUTChannel0" offset="3" length="2" variable="brightness2Channel0Readback" print="uint16_t" hex="0" />
+      <save name="brightness2OnDUTChannel1" offset="5" length="2" variable="brightness2Channel1Readback" print="uint16_t" hex="0" />
+    </request>
+
+    <request name="disableBluetoothOnREF" value="c8 10 10 00 00 01 02 00 00" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+    
+  </requests>
+</radiosim>

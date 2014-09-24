@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<radiosim>
+  <settings>
+    <setting name="out" value="example.log" brief="Output file"/>
+  </settings>
+  <variables>
+    <variable name="distance" value="766" brief="Distance"/>
+  </variables>
+  <requests>
+    <request name="readAdapt" value="05 03 10 00 00 01" endless="1" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+      <verify name="Verify Distance" offset="3" size="2" variable="distance" tolerance="2"/>
+    </request>
+  </requests>
+</radiosim>

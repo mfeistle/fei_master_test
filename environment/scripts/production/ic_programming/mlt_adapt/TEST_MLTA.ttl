@@ -1,0 +1,178 @@
+; 20140711-015725: Test sequence macro for Regbus Gateway
+; file: TEST_MLTA.ttl - version 0.0
+
+max_frames=51
+strdim mb_frm max_frames
+logfn="TEST_MLTA.log"
+ttcfg="TEST_MLTA.ini"
+
+
+; modbus frames
+;   mb_frm[i]="mpause:request frame;respond frame;error code"
+
+mb_frm[1]="0;$05 $03 $11 $00 $00 $08 $40 $B4;05 03 10 4C 4D 5F 54 44 41 50 41 2D 54 31 30 30 2E 2E 32 C2 E0;2"
+mb_frm[2]="0;$05 $03 $11 $08 $00 $08 $C1 $76;05 03 10 30 30 30 30 61 2D 63 34 34 34 36 33 2D 62 65 72 4D 87;2"
+mb_frm[3]="0;$05 $03 $11 $10 $00 $08 $41 $71;05 03 10 00 6C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 79 44;2"
+mb_frm[4]="0;$05 $03 $10 $00 $00 $01 $81 $4E;05 03 02 ([0-9A-F ]{5}) [0-9A-F ]{5};3;800;1200"
+
+; connect to modbus
+call MB_CONNECT
+
+; commit test steps
+for test_state 1 max_frames-1
+  strlen mb_frm[test_state]
+  if result=0 break
+
+  mb_txrx=mb_frm[test_state]
+  call SEND_MBFRM
+
+  ; validate respond data register value
+  if rd_data>=0 && (rd_data<rd_data_min || rd_data>rd_data_max) then
+    setexitcode mb_frm_err
+    end
+  endif
+
+next
+
+; disconnect from ModBus
+call MB_DISCONNECT
+
+; test done -> ok = 0
+logclose
+setexitcode 0
+end
+
+; ; close log file
+; stmp=''
+; testlink
+; if result=2 loginfo stmp
+; strlen stmp
+; if result>0 logclose
+
+
+;-------------------------------------------------------------------------
+:MB_CONNECT
+;-------------------------------------------------------------------------
+
+  strtrim param2 ' COMcom'
+  strlen param2
+  if result=0 then
+    ; missing argument
+    setexitcode 254
+    end
+  endif
+
+  ; connect to modbus (use teraterm.ini settings)
+
+  sprintf '/F="%s" /C=%s /BAUD=115000' ttcfg param2
+  sprintf '/V %s' inputstr  ; hide teraterm
+  connect inputstr
+  if result<2 then
+   ; connection failed
+   setexitcode 252
+   end
+  endif
+
+  ; open modbus log file
+
+  clearscreen 1
+  setdebug 2
+  logopen logfn 0 0 0 0 1
+  if result!=0 then
+   setexitcode 253
+   end
+  endif
+
+return
+
+
+;-------------------------------------------------------------------------
+:MB_DISCONNECT
+;-------------------------------------------------------------------------
+
+  disconnect
+
+return
+
+
+;-------------------------------------------------------------------------
+:SEND_MBFRM
+;-------------------------------------------------------------------------
+; return: (int)rd_data      = single register value in respond (0..64k)
+;         (int)rd_data_min  = minimal value
+;         (int)rd_data_max  = maximal value
+;         (int)mb_frm_err   = exit code
+;
+
+  ifdefined frm_cnt
+  if result=0 frm_cnt=0
+
+  rd_data=-1        ; default
+
+  setdebug 2        ; teraterm screen data as 2 digit hex
+  setecho 0         ; local echo off
+  clearscreen 1
+
+  strsplit mb_txrx ';' 6              ; 'pause;request;response;errcode;minval;maxval'
+  str2int wait_after groupmatchstr1
+  mb_req=groupmatchstr2
+  mb_resp=groupmatchstr3
+  str2int mb_frm_err groupmatchstr4
+  str2int rd_data_min groupmatchstr5
+  str2int rd_data_max groupmatchstr6
+
+  mb_resp_valid=1
+  strtrim mb_resp ' '
+  strlen mb_resp
+  if result=0 mb_resp_valid=0         ; ignore respond ('pause;request;;errcode;X;X')
+
+  frm_cnt=frm_cnt+1
+
+  logwrite #$0D#$0A  ; CR+LF
+  inputstr=mb_req
+  do
+    strreplace inputstr 1 '\$' ''
+  loop until result=0
+  sprintf 'mb_rm[%02d] exitcode=%02d: TX=%s , RX=' frm_cnt mb_frm_err inputstr
+  logwrite inputstr
+
+  timeout=0
+  mtimeout=1000     ; msec
+  flushrecv         ; clear receive buffer
+
+  groupmatchstr1=''    ; data read only
+  sprintf 'send %s' mb_req
+  execcmnd inputstr  ; send frame
+
+  if mb_resp_valid=1 waitregex mb_resp  ; validate response frame
+  if mb_resp_valid=1 && result=0 then
+    ; timeout or response not valid
+    sprintf ' <> %s (error)' mb_resp
+    logwrite inputstr
+    logclose
+    setexitcode mb_frm_err
+    end
+  endif
+  logwrite ' (ok)'
+
+  ; return single register value if defined in respond (regex group 1)
+  strlen groupmatchstr1
+  if result>0 then
+    strsplit groupmatchstr1 ' ' 2
+    hexvalue='0x'
+    strconcat hexvalue groupmatchstr1
+    strconcat hexvalue groupmatchstr2
+    str2int rd_data hexvalue
+  endif
+
+  ; wait after modbus command
+  if wait_after=0 then
+    return
+  elseif wait_after>999 then
+    pause  wait_after/1000  ; sec
+    mpause wait_after%1000  ; msec
+  else
+    mpause wait_after
+  endif
+
+return

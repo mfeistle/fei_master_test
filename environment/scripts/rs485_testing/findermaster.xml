@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<radiosim>
+  <settings>
+    <setting name="out" value="example.log" brief="Output file"/>
+  </settings>
+  <requests>
+    <request name="writeChannels" value="c8 10 10 03 00 0A 14 01 30 01 35 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00" endless="1" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+  </requests>
+</radiosim>

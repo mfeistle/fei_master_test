@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<radiosim>
+  <settings>
+    <setting name="out" value="example.log" brief="Output file"/>
+  </settings>
+  <requests>
+    <request name="writeSMState" value="04 10 10 00 00 01 02 00 09" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+    <request name="writeIlluminance" value="04 10 10 02 00 01 02 02 00" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+    <request name="writeSMVersion" value="04 10 12 00 00 0E 1C 6d 73 61 5f 70 70 30 2d 2e 33 31 30 30 2e 30 30 2d 31 33 32 33 38 38 30 72 2d 6c 65" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="6"/>
+    </request>
+    <request name="readSMState" value="04 03 10 00 00 01" endless="0" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+    </request>
+    <request name="readFinderState" value="04 03 10 01 00 01" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+      <save name="finderState" offset="3" length="2" variable="finderState" print="uint16_t" hex="1" />
+    </request>
+    <request name="readIlluminanceLevel" value="04 03 10 02 00 01" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+      <save name="illuminanceLevel" offset="3" length="2" variable="illuminance" print="uint16_t" />
+    </request>
+    <request name="readChannelx" value="04 03 10 03 00 0A" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="23"/>
+      <save name="channel0" offset="3" length="2" variable="channel0" print="uint16_t" hex="1" />
+      <save name="channel1" offset="5" length="2" variable="channel1" print="uint16_t" hex="1" />
+    </request>
+    <request name="readFinderRSSI" value="04 03 10 20 00 01" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="5"/>
+      <save name="finderRSSI" offset="3" length="2" variable="illuminance" print="sint8_t"/>
+    </request>
+    <request name="readAppVersion" value="04 03 18 00 00 20" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="67"/>
+      <save name="appversion" offset="3" length="3" variable="appVersion" print="ascii"/>
+    </request>
+    <request name="readFinderVersion" value="04 03 11 00 00 20" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="67"/>
+      <save name="finderVersion" offset="3" length="64" variable="finderVersion" print="ascii"/>
+    </request>
+    <request name="readFinderHWVersion" value="04 03 11 30 00 0F" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="33"/>
+      <save name="finderHWVersion" offset="3" length="16" variable="finderHWVersion" print="ascii"/>
+    </request>
+    <request name="readBTM101HWVersion" value="04 03 11 50 00 20" endless="1" cyclic="1000" stoponerror="1">
+      <verify name="Verify Length" length="67"/>
+      <save name="btm101Version" offset="3" length="64" variable="btm101Version" print="ascii"/>
+    </request>
+  </requests>
+</radiosim>
