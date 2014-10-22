@@ -20,7 +20,7 @@
 
 */ 
 
-/*
+/* 
 Serielle DBG Eingabe ermoeglicht folgendes:
   't': Simuliert Tasteneingabe
   'p': Simuliert PIR-Detektor
