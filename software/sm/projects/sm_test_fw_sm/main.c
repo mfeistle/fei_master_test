@@ -34,7 +34,7 @@ Serielle DBG Eingabe ermoeglicht folgendes:
 */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f10x.h"
+#include "stm32f10x.h" 
 #include "stm32f10x_it.h"
 #include <stdio.h>
 #include <stdlib.h>
