@@ -1,0 +1,1 @@
+copy *.uvopt.ori *. /Y
